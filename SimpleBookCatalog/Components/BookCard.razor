@@ -1,0 +1,21 @@
+﻿<div class="book-card">
+    <div class="card-body">
+        <h5 class="card-title">@Book.Title</h5>
+        <h6 class="card-subtitle text-muted mb-2">By @Book.Author</h6>
+        <p class="card-text">
+            Published on @Book.PublicationDate?.ToString("MMM dd, yyyy")
+        </p>
+    </div>
+    <div class="actions">
+        <a href="@($"edit/{Book.Id}")" class="btn btn-warning shadow-none"> 
+            Edit
+            </a>
+
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public required Book Book { get; set; }
+}

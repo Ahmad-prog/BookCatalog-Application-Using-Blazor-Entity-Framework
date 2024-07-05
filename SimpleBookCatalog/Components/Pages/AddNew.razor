@@ -1,0 +1,129 @@
+﻿@page "/add-new"
+@inject IBookRepository Repository
+@inject NavigationManager   Navigation
+@rendermode InteractiveServer
+
+
+<PageTitle>
+    Add New Book
+</PageTitle>
+<div class="background-container">
+<div class="row justify-content-center">
+    <div class="col-6">
+        <EditForm Enhance="true" method="post" FormName="AddBookForm" OnValidSubmit="AddBook" Model="Book" autocomplete="off">
+            <h3>
+                Add New Book
+            </h3>
+            <div class="mb-3">
+                <label for="title" class="form-label"> 
+                    Title
+                </label>
+                <InputText id="title" @bind-Value="Book.Title" class="form-control" shadow-none />
+            </div>
+            <div class="mb-3">
+                <label for="author" class="form-label">
+                    Author
+                </label>
+                <InputText id="author" @bind-Value="Book.Author" class="form-control" shadow-none />
+            </div>
+            <div class="mb-3">
+                <label for="publication-date" class="form-label">
+                   Date Published
+                </label>
+                <InputDate id="publication-date" @bind-Value="Book.PublicationDate" class="form-control" shadow-none />
+            </div>
+            <div class="mb-3">
+                <label for="category" class="form-label">
+                    Select Category
+                </label> 
+                <InputSelect id="category" @bind-Value="Book.Category" class="form-control shadow-none">
+                    <option value="0"> Select Category</option>
+                    @foreach(var category in Enum.GetValues(typeof(Category)))
+                    {
+                        <option value="@category">
+                            @category.ToString()
+                        </option>
+                    }
+                </InputSelect>
+            </div>
+
+            <div class="mb-3 d-flex flex-column flex-sm-row justify-content-center align-items-center">
+                <button class="btn btn-primary shadow-none mb-2 mb-sm-0 me-sm-3" @onclick="ShowDialog">
+                    Submit
+                </button>
+                <a href="/" class="btn btn-secondary shadow-none">
+                    Back to list
+                </a>
+            </div>
+
+       
+
+           
+                <DataAnnotationsValidator/>
+                <ValidationSummary/>
+        </EditForm>
+        @if (showDialog)
+        {
+            <div class="dialog-box">
+                <div class="tick">✔</div>
+                <p>Book Successfully Added</p>
+                <button class="btn btn-secondary" @onclick="CloseDialog">Close</button>
+            </div>
+        }
+
+    </div>
+
+
+   </div>
+ </div>
+@code {
+    [SupplyParameterFromForm]
+    public Book Book { get; set; } = new();
+
+    private async Task AddBook()
+    {
+        await Repository.AddAsync(Book);
+      
+    }
+
+    bool showDialog = false;
+
+    void ShowDialog()
+    {
+        showDialog = true;
+
+    }
+
+    void CloseDialog()
+    {
+        showDialog = false;
+    }
+}
+
+<style>
+    .background-container {
+        background-image: url('..\Images\images.jpeg');
+       
+    }
+    .dialog-box {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: white;
+        border: 1px solid black;
+        border-radius: 1rem;
+        padding: 2rem;
+        text-align: center;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+        .dialog-box .tick {
+            font-size: 3rem;
+            color: green;
+        }
+</style>

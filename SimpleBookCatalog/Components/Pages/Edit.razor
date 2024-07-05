@@ -1,0 +1,93 @@
+﻿@page "/edit/{id:int}"
+@inject IBookRepository Repository
+@inject NavigationManager Navigation
+
+<PageTitle>
+    Edit Book Catalog
+</PageTitle>
+
+@if(Book is not null)
+{
+    <div class="row justify-content-center">
+        <div class="col-6">
+            <EditForm Enhance="true" method="post" FormName="EditBookForm" OnValidSubmit="EditBook" Model="Book" autocomplete="off">
+                <h3>
+                    Edit Book @id
+                </h3>
+                <input type="hidden" name="Book.Id" value="@Book.Id" />
+                <div class="mb-3">
+                    <label for="title" class="form-label">
+                        Title
+                    </label>
+                    <InputText id="title" @bind-Value="Book.Title" class="form-control" shadow-none />
+                </div>
+                <div class="mb-3">
+                    <label for="author" class="form-label">
+                        Author
+                    </label>
+                    <InputText id="author" @bind-Value="Book.Author" class="form-control" shadow-none />
+                </div>
+                <div class="mb-3">
+                    <label for="publication-date" class="form-label">
+                        Date Published
+                    </label>
+                    <InputDate id="publication-date" @bind-Value="Book.PublicationDate" class="form-control" shadow-none />
+                </div>
+                <div class="mb-3">
+                    <label for="category" class="form-label">
+                        Select Category
+                    </label>
+                    <InputSelect id="category" @bind-Value="Book.Category" class="form-control shadow-none">
+                        <option value="0"> Select Category</option>
+                        @foreach (var category in Enum.GetValues(typeof(Category)))
+                        {
+                            <option value="@category">
+                                @category.ToString()
+                            </option>
+                        }
+                    </InputSelect>
+                </div>
+
+                <div class="mb-3 d-flex flex-column flex-sm-row justify-content-center align-items-center">
+                    <button class="btn btn-primary shadow-none mb-2 mb-sm-0 me-sm-3">
+                        Submit
+                    </button>
+                    <a href="/" class="btn btn-secondary shadow-none">
+                        Back to list
+                    </a>
+
+                </div>
+
+
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+            </EditForm>
+
+        </div>
+
+
+    </div>
+}
+
+
+@code {
+    [Parameter]
+    public int id { get; set; }
+
+    [SupplyParameterFromForm]
+    public Book? Book { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Book ??= await Repository.GetByIdAsync(id);
+    }
+
+    private async Task EditBook()
+    {
+        if(Book is not null)
+        {
+            await Repository.UpdateAsync(Book);
+            Navigation.NavigateTo("/");
+        }
+    }
+}
